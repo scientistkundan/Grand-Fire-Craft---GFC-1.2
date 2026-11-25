@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grand Fire Craft (GFC) - Official Game Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="orientation-warning">
+        <h2>Please Rotate Your Phone</h2>
+        <p>Grand Fire Craft (GFC) only runs in Landscape Mode!</p>
+    </div>
+
+    <div id="first-time-modal" style="display:none;">
+        <div class="modal-card">
+            <h2 style="color:#00ffff; margin:0 0 6px 0; letter-spacing:2px;">WELCOME TO GFC</h2>
+            <p style="color:#ccc; font-size:12px; margin:0 0 12px 0;">Enter your Hero Name to get your 10-Digit UID</p>
+            <input type="text" id="firstNameInput" class="input-field" placeholder="Enter Hero Name" maxlength="15">
+            <button class="start-btn" onclick="createPermanentProfile()">CREATE MY UID & SAVE</button>
+        </div>
+    </div>
+
+    <div id="lobby">
+        <div class="lobby-header">
+            <div style="font-size:10px; color:#00ff88; letter-spacing:2px; margin-bottom:2px;">OFFICIAL WEB PORTAL • SEASON 1</div>
+            <h1>GRAND FIRE CRAFT</h1>
+            <h3>GFC : BATTLE ROYALE EDITION</h3>
+        </div>
+
+        <div class="lobby-container">
+            <div class="panel">
+                <h4>PLAYER PROFILE</h4>
+                <p class="label-text">HERO NAME</p>
+                <input type="text" id="heroNameInput" class="input-field" value="Gojo Satoru" maxlength="15" onchange="updateSavedName(this.value)">
+                
+                <div class="uid-box">
+                    <span>UID: <strong id="displayUidText" style="color:#00ffff; letter-spacing:1px;">0000000001</strong></span>
+                    <button class="copy-uid-btn" onclick="copyMyUid()">COPY</button>
+                </div>
+
+                <p class="label-text">OUTFIT STYLE</p>
+                <div class="option-group">
+                    <button class="option-btn active" onclick="setOutfit(0x111111, this)">Dark Pro</button>
+                    <button class="option-btn" onclick="setOutfit(0xffffff, this)">White Gojo</button>
+                    <button class="option-btn" onclick="setOutfit(0x0055ff, this)">Cyber Blue</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h4>WEAPON & WORLD</h4>
+                <p class="label-text">SELECT WEAPON</p>
+                <select id="lobbyWeaponSelect" class="input-field" onchange="selectLobbyWeapon(this.value)">
+                    <optgroup label="Snipers (Auto Scope)">
+                        <option value="Master Hunter">Master Hunter (AWM - DMG: 150 | Auto 8X)</option>
+                        <option value="Armor Destroyer">Armor Destroyer (M82B - DMG: 135 | Auto 8X)</option>
+                        <option value="Quick Execution">Quick Execution (Kar98K - DMG: 120 | Auto 6X)</option>
+                        <option value="Silent Precision">Silent Precision (M24 - DMG: 115 | Auto 6X)</option>
+                        <option value="Life & Death">Life & Death (Heal Sniper - DMG: 90 | Auto 4X)</option>
+                        <option value="Rapid Marksman">Rapid Marksman (VSK-94 - DMG: 85 | Auto 4X)</option>
+                    </optgroup>
+                    <optgroup label="Machine Guns">
+                        <option value="Iron Rain">Iron Rain (DMG: 32)</option>
+                        <option value="Heavy Titan">Heavy Titan (DMG: 38)</option>
+                        <option value="Armor Crusher">Armor Crusher (DMG: 42)</option>
+                    </optgroup>
+                    <optgroup label="Shotguns">
+                        <option value="Bomb Blaster">Bomb Blaster (DMG: 68)</option>
+                        <option value="Katta King">Katta King (DMG: 95)</option>
+                        <option value="Power Charge">Power Charge (DMG: 80)</option>
+                    </optgroup>
+                    <optgroup label="Rifles">
+                        <option value="Iron Fury">Iron Fury (AK-47 - DMG: 35)</option>
+                        <option value="Plasma Nova">Plasma Nova (DMG: 38)</option>
+                    </optgroup>
+                    <optgroup label="Pistols">
+                        <option value="Desert Titan">Desert Titan (DMG: 58)</option>
+                        <option value="Headshot Demon">Headshot Demon (DMG: 125)</option>
+                    </optgroup>
+                </select>
+
+                <p class="label-text">TIME OF DAY</p>
+                <div class="option-group">
+                    <button class="option-btn active" onclick="setMap(0x3a6b35, this)">Day City</button>
+                    <button class="option-btn" onclick="setMap(0x12121c, this)">Neon Night</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h4>FRIENDS & SQUAD</h4>
+                <p class="label-text">ADD FRIEND BY 10-DIGIT UID</p>
+                <div style="display:flex; gap:5px; margin-bottom:6px;">
+                    <input type="text" id="friendUidInput" class="input-field" style="margin-bottom:0; padding:7px; font-size:12px;" placeholder="e.g. 0000000002" maxlength="10">
+                    <button class="option-btn active" style="flex:0 0 65px;" onclick="sendFriendRequest()">ADD</button>
+                </div>
+
+                <p class="label-text">REQUESTS & FRIENDS LIST</p>
+                <div id="friendsListContainer" class="friends-scroll"></div>
+            </div>
+        </div>
+
+        <div class="start-btn-container">
+            <button class="start-btn" onclick="enterGame()">PLAY GFC • DROP NOW</button>
+            <div style="font-size:10px; color:#bbb; margin-top:4px;">GFC Official Web Edition • 10-Digit UID • Squad & Mic</div>
+        </div>
+    </div>
+
+    <div id="scope-overlay">
+        <div id="scope-badge">AUTO 8X SCOPE</div>
+        <div class="scope-line-h"></div>
+        <div class="scope-line-v"></div>
+        <div class="scope-center-dot"></div>
+    </div>
+
+    <div id="ui">
+        <div class="box">UID: <span id="hudUid" style="color:#00ffff;">0000000001</span></div>
+        <div class="box">LVL: <span id="levelVal" style="color:#ffaa00;">0</span></div>
+        <div class="box">KILLS: <span id="killsVal" style="color:#00ffff;">0/5</span></div>
+        <div class="box">STATUS: <span id="modeLabel" style="color:#00ffff;">ON FOOT</span></div>
+        <div class="box">ZONE: <span id="zoneStatus" style="color:#00ff88;">SAFE</span></div>
+        <div class="box">ALIVE: <span id="aliveCount" style="color:#ffaa00;">5</span></div>
+        <div class="box">SCORE: <span id="s">0</span></div>
+        <div class="box">BAG: <span id="medkitCount" style="color:#00ff88;">2</span></div>
+        <div class="box" id="displayGunName" style="color:#ff0055;">GUN: Master Hunter</div>
+        <div class="box">HP: <div id="health-container"><div id="health-bar"></div></div></div>
+    </div>
+
+    <div id="minimap-box">
+        <canvas id="minimap-canvas" width="116" height="116"></canvas>
+        <div id="minimap-tag">RADAR</div>
+    </div>
+
+    <div id="levelup-banner">LEVEL UP! +1 MEDKIT & FULL HP</div>
+    <div id="car-prompt">Tap RIDE to Drive / Exit</div>
+    <div id="heal-msg">Healing Complete! +50 HP</div>
+    <div id="drop-msg">Airdrop Collected! +1 Medkit & +40 Score</div>
+    <div id="mic-status-msg">MIC ON: Talking with Squad</div>
+
+    <div id="webgl-container"></div>
+    
+    <div id="controls">
+        <div id="stick"><div id="knob"></div></div>
+        <div class="action-btns">
+            <button class="btn" id="micBtn">MIC<br><span id="micStateLabel">OFF</span></button>
+            <button class="btn" id="healBtn">HEAL<br><span id="healBadge">(2)</span></button>
+            <button class="btn" id="carBtn">RIDE</button>
+            <button class="btn" id="jumpBtn">JUMP</button>
+            <button class="btn" id="fireBtn">FIRE</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
